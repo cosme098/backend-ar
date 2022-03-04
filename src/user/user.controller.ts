@@ -1,27 +1,35 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.model';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 @Controller()
 export class UserController {
     constructor(private readonly service: UserService) {}
 
-    @Get('findById/:id')
-  get(@Param() params) {
-    return this.service.findById(params.id);
-  }
+  //   @UseGuards(JwtAuthGuard)
+  //   @Get('findByEmail/:email')
+  //   get(@Param() params) {
+  //   return this.service.findByEmail(params.email);
+  // }
 
-  @Post('create')
-  create(@Body() user: User) {
-    return this.service.create(user);
-  }
+    @Post('login')
+    login(@Body() user: User) {
+         return this.service.login(user);
+    }
 
-  @Put('update')
-  update(@Body() user: User) {
-    return this.service.update(user);
-  }
+//   @Post('create')
+//   create(@Body() user: User) {
+//     return this.service.create(user);
+//   }
 
-  @Delete('delete/:id')
-  remove(@Param() params) {
-    return this.service.remove(params.id);
-  }
+//   @Put('update')
+//   update(@Body() user: User) {
+//     return this.service.update(user);
+//   }
+
+//   @Delete('delete/:id')
+//   remove(@Param() params) {
+//     return this.service.remove(params.id);
+//   }
  }

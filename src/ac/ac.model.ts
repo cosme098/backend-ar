@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 export class AcModel {}
 
 export const AcSchema = new mongoose.Schema({
-    owner: { type: String, required: true },
+    name: { type: String, required: true },
     mac: { type: String, required: true },
     localization: { type: String, required: true },
     protocol: { type: String, required: true },
@@ -25,7 +25,7 @@ export const AcSchema = new mongoose.Schema({
   });
   
   export interface Ac {
-    owner: String
+    name:String
     mac: String
     localization: String
     protocol: String

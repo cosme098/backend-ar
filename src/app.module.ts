@@ -1,9 +1,11 @@
+import { RoutinesModule } from './routines/routines.module';
 import { UserModule } from './user/user.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AcModule } from './ac/ac.module';
 @Module({
   imports: [
+    RoutinesModule,
     UserModule,
     AcModule,
     MongooseModule.forRoot('mongodb+srv://cosme:xaruto123456@cluster0.n66yy.mongodb.net/ARCONDICIONADO'),

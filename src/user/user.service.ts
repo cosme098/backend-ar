@@ -15,11 +15,11 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return await this.userModel.findOne({ email: email });
+    return await this.userModel.findOne({ username: email });
   }
 
   async validateUser (_user: User):Promise<any> {    
-    const user = await this.userModel.findOne({ email: _user.email });
+    const user = await this.userModel.findOne({ username: _user.username });
     
  return new Promise((resolve, reject) => {
   if(user && user.password === _user.password) {
@@ -33,9 +33,8 @@ export class UserService {
   }
   
  async login(user:any):Promise<any>{
-   console.log(user);
      const validUser = await this.validateUser(user).then(validuser => {
-       const payload = { email:validuser.email, sub: validuser.id };
+       const payload = { username:validuser.username, sub: validuser.id };
        return this.jwtService.sign(payload);
      }, err => {
       return err;

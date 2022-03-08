@@ -17,7 +17,8 @@ import { JwtStrategy } from 'src/auth/jwt.strategy';
         ])
     ],
     controllers: [
-        UserController,],
+        UserController,
+    ],
     providers: [
         UserService,
         JwtStrategy,

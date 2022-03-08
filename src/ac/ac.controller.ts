@@ -5,23 +5,23 @@ import { Ac } from './ac.model';
 
 @Controller()
 export class UserController {
-    constructor(private readonly service: AcService) {}
+    constructor(private readonly service: AcService) { }
 
     @UseGuards(JwtAuthGuard)
     @Get('AcGetAll')
     findAll(@Param() params) {
-    return this.service.findAll(params.id);
-   }
+        return this.service.findAll(params.id);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('Ac/new')
     newAr(@Body() Ac: Ac) {
-         return this.service.create(Ac);
+        return this.service.create(Ac);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('Ac/:ac')
-    updateAr(@Body() Ac: Ac, @Param() params) {
+    @Put('Ac/edit/:id')
+    updateAr(@Param() params, @Body() Ac: Ac) {
         return this.service.update(params.id, Ac);
     }
 
@@ -30,4 +30,4 @@ export class UserController {
     deleteAr(@Param() params) {
         return this.service.delete(params.id);
     }
- }
+}

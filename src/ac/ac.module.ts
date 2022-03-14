@@ -1,8 +1,9 @@
-import { UserController } from './ac.controller';
+import { AcController } from './ac.controller';
 import { AcService } from './ac.service';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AcSchema } from './ac.model';
+import { MqttServices } from 'src/mqtt/mqtt.service';
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -10,9 +11,10 @@ import { AcSchema } from './ac.model';
         ])
     ],
     controllers: [
-        UserController,],
+        AcController,],
     providers: [
         AcService,
+        MqttServices
     ],
     exports: [AcService],
 })

@@ -4,13 +4,13 @@ import { AcService } from './ac.service';
 import { Ac } from './ac.model';
 
 @Controller()
-export class UserController {
+export class AcController {
     constructor(private readonly service: AcService) { }
 
     @UseGuards(JwtAuthGuard)
     @Get('AcGetAll')
     findAll(@Param() params) {
-        return this.service.findAll(params.id);
+        return this.service.find(params.id);
     }
 
     @UseGuards(JwtAuthGuard)

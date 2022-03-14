@@ -4,13 +4,22 @@ export default class RoutinesModel { }
 
 export const routineSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    time: { type: Date, required: true },
-    acs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ac" }],
+    action: { type: Number, required: true },
+    days: [{ type: Number, required: true }],
+    timer: [{ type: Object, required: true }],
+    ars: [{ type: String, required: true }],
+    state: { type: Number, required: true },
 });
 
 export interface routines {
     name: string;
-    time: Date;
-    acs: mongoose.Types.ObjectId[];
-    _id?: mongoose.Types.ObjectId;
+    action: Number;
+    days: any[];
+    timer: [{
+        hour: number;
+        minute: number;
+    }];
+    ars: Array<string>;
+    state: Number;
+    _id: mongoose.Types.ObjectId;
 }

@@ -5,9 +5,9 @@ import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
-    constructor(
-      private jwtService: JwtService,
-      @InjectModel("User") private readonly userModel:Model<User>,) {}
+  constructor(
+    private jwtService: JwtService,
+    @InjectModel("User") private readonly userModel: Model<User>,) { }
 
   async create(doc: User) {
     const result = await new this.userModel(doc).save();
@@ -18,31 +18,31 @@ export class UserService {
     return await this.userModel.findOne({ username: email });
   }
 
-  async validateUser (_user: User):Promise<any> {    
+  async validateUser(_user: User): Promise<any> {
     const user = await this.userModel.findOne({ username: _user.username });
-    
- return new Promise((resolve, reject) => {
-  if(user && user.password === _user.password) {
-    const  { password, ...result } = user.toObject();
-    resolve(result);
-  }
-  else {
-    reject(new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED));
-  }
-   })      
-  }
-  
- async login(user:any):Promise<any>{
-     const validUser = await this.validateUser(user).then(validuser => {
-       const payload = { username:validuser.username, sub: validuser.id };
-       return this.jwtService.sign(payload);
-     }, err => {
-      return err;
-     })
-      return validUser;
+
+    return new Promise((resolve, reject) => {
+      if (user && user.password === _user.password) {
+        const { password, ...result } = user.toObject();
+        resolve(result);
+      }
+      else {
+        reject(new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED));
+      }
+    })
   }
 
-  async update(user: User) {}
+  async login(user: any): Promise<any> {
+    const validUser = await this.validateUser(user).then(validuser => {
+      const payload = { username: validuser.username, sub: validuser.id };
+      return this.jwtService.sign(payload);
+    }, err => {
+      throw new HttpException("Usuario o senha errados", HttpStatus.UNAUTHORIZED);
+    })
+    return validUser;
+  }
 
-  async remove(user: User) {}
- }
+  async update(user: User) { }
+
+  async remove(user: User) { }
+}

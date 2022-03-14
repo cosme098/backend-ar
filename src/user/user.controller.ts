@@ -5,7 +5,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 @Controller()
 export class UserController {
-    constructor(private readonly service: UserService) {}
+  constructor(private readonly service: UserService) { }
 
   //   @UseGuards(JwtAuthGuard)
   //   @Get('findByEmail/:email')
@@ -13,23 +13,23 @@ export class UserController {
   //   return this.service.findByEmail(params.email);
   // }
 
-    @Post('login')
-    login(@Body() user: User) {
-         return this.service.login(user);
-    }
+  @Post('login')
+  login(@Body() user: User) {
+    return this.service.login(user);
+  }
 
-//   @Post('create')
-//   create(@Body() user: User) {
-//     return this.service.create(user);
-//   }
+  //   @Post('create')
+  //   create(@Body() user: User) {
+  //     return this.service.create(user);
+  //   }
 
-//   @Put('update')
-//   update(@Body() user: User) {
-//     return this.service.update(user);
-//   }
+  //   @Put('update')
+  //   update(@Body() user: User) {
+  //     return this.service.update(user);
+  //   }
 
-//   @Delete('delete/:id')
-//   remove(@Param() params) {
-//     return this.service.remove(params.id);
-//   }
- }
+  //   @Delete('delete/:id')
+  //   remove(@Param() params) {
+  //     return this.service.remove(params.id);
+  //   }
+}

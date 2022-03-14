@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { routines } from './routines.model';
 import { RoutinesService } from './routines.service';
 
 @Controller()
@@ -9,21 +10,28 @@ export class RoutinesController {
 
     @UseGuards(JwtAuthGuard)
     @Get('routinesAll')
-    findAll() { }
+    findAll() {
+        return this.routine.getRoutines();
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('routines/new')
-    create() {
-        return this.routine.createRoutine()
+    create(@Body() routineNew: any) {
+        return this.routine.createRoutine(routineNew)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('routines/update/:id')
-    update() { }
+    @Put('routines/update')
+    update(@Body() routineUpdate: any) {
+        return this.routine.updateRoutine(routineUpdate);
+    }
 
     @UseGuards(JwtAuthGuard)
-    @Delete('routines/delete/:id')
-    remove() {
-        return this.routine.deleteRoutine()
+    @Delete('routines/delete/:id/:name')
+    remove(@Param() params: any) {
+        return this.routine.deleteRoutine(params.id, params.name);
     }
 }
+
+
+

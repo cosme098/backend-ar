@@ -2,9 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Ac } from './ac.model';
-
+import { MqttServices } from 'src/mqtt/mqtt.service';
 @Injectable()
 export class AcService {
+  constructor(
+    private readonly mqtt: MqttServices,
+    @InjectModel("Ac") private readonly AcModel: Model<Ac>) { }
 
   StructureAc: Ac = {
     name: "",
@@ -13,13 +16,13 @@ export class AcService {
     protocol: "",
     model: "1",
     power: 0,
-    mode: "cool",
+    mode: "kCool",
     degress: 0,
-    fanspeed: "auto",
+    fanspeed: "kMax",
     swingv: "swingv",
     swingh: "off",
     quiet: 0,
-    turbo: 0,
+    turbo: 1,
     econo: 0,
     light: 1,
     beep: 1,
@@ -28,11 +31,12 @@ export class AcService {
     sleep: 0,
   }
 
-  constructor(
-    @InjectModel("Ac") private readonly AcModel: Model<Ac>,) { }
 
-  async findAll(id: string) {
+  async find(id: string) {
     return await this.AcModel.find({ id: id });
+  }
+  async findAll() {
+    return await this.AcModel.find();
   }
 
   async create(Ac: Ac) {
@@ -43,6 +47,9 @@ export class AcService {
     this.StructureAc.power = Ac.power;
     this.StructureAc.degress = Ac.degress;
     const result = await new this.AcModel(this.StructureAc).save();
+    console.log('Adicionando Ac no topic: mqtt/brisanet/' + Ac.mac);
+
+    this.mqtt.publishInTopic('mqtt/brisanet/' + this.StructureAc.mac, this.StructureAc);
     return result.id;
   }
 
@@ -53,6 +60,9 @@ export class AcService {
     this.StructureAc.protocol = Ac.protocol;
     this.StructureAc.power = Ac.power;
     this.StructureAc.degress = Ac.degress;
+    console.log('update no topic: mqtt/brisanet/' + Ac.mac);
+
+    this.mqtt.publishInTopic('mqtt/brisanet/' + Ac.mac, this.StructureAc);
     return await this.AcModel.findByIdAndUpdate(id, this.StructureAc);
   }
 

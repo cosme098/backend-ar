@@ -2,7 +2,7 @@ import { RoutinesService } from './routines.service';
 import { RoutinesController } from './routines.controller';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { routineSchema } from './routines.model';
+import { lastRoutine, routineSchema } from './routines.model';
 import { MqttServices } from 'src/mqtt/mqtt.service';
 import { AcModule } from 'src/ac/ac.module';
 
@@ -11,6 +11,7 @@ import { AcModule } from 'src/ac/ac.module';
         AcModule,
         MongooseModule.forFeature([
             { name: 'Routines', schema: routineSchema },
+            { name: 'lastRoutines', schema: lastRoutine }
         ]),
     ],
     controllers: [

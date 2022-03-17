@@ -21,14 +21,26 @@ export class AppService {
             schedules.push(...routines);
         })
 
+        // synchronization last routines
+        scheduleJob('30 * * * *', (values) => {
+            // console.log("HOra:", values.getHours());
+            arsAll.forEach(ac => {
+                console.log(ac);
+                ac.power = 1;
+                this.Ac.onlyUpdate(ac._id, ac);
+                this.mqtt.publishInTopic("mqtt/brisanet/synchronized/" + ac.mac, ac).then(() => {
+                    console.log("srotina de sincronização!");
+                });
+            });
+        });
+
+        // for start all routines 
         schedules.forEach(data => {
             scheduleJob(data.name, { hour: data.timer[0].hour, minute: data.timer[0].minute, dayOfWeek: data.days }, () => {
                 data.ars.forEach((element: any) => {
                     ars.push(arsAll.find(x => x._id.toString() == element.toString()));
                 })
                 ars.forEach(ac => {
-                    console.log(ac);
-
                     ac.degress = data.action;
                     ac.power = data.state;
                     console.log("rotina correndo normal", "mqtt/brisanet/" + ac.mac);

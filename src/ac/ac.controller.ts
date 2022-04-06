@@ -8,25 +8,25 @@ export class AcController {
     constructor(private readonly service: AcService) { }
 
     @UseGuards(JwtAuthGuard)
-    @Get('AcGetAll')
+    @Get('api/AcGetAll')
     findAll(@Param() params) {
         return this.service.find(params.id);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('Ac/new')
+    @Post('api/Ac/new')
     newAr(@Body() Ac: Ac) {
         return this.service.create(Ac);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('Ac/edit/:id')
+    @Put('api/Ac/edit/:id')
     updateAr(@Param() params, @Body() Ac: Ac) {
         return this.service.update(params.id, Ac);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete('Ac/delete/:id')
+    @Delete('api/Ac/delete/:id')
     deleteAr(@Param() params) {
         return this.service.delete(params.id);
     }

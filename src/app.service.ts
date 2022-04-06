@@ -22,15 +22,12 @@ export class AppService {
         })
 
         // synchronization last routines
-        scheduleJob('30 * * * *', (values) => {
-            // console.log("HOra:", values.getHours());
-            arsAll.forEach(ac => {
-                console.log(ac);
-                ac.power = 1;
-                this.Ac.onlyUpdate(ac._id, ac);
-                this.mqtt.publishInTopic("mqtt/brisanet/synchronized/" + ac.mac, ac).then(() => {
-                    console.log("srotina de sincronização!");
-                });
+        scheduleJob('37 * * * *', (values) => {
+            console.log("de 35 em 35");
+            arsAll.forEach(async ac => {
+                ac.power = true;
+                await this.Ac.onlyUpdate(ac._id, ac);
+                await this.mqtt.publishInTopic('mqtt/brisanet/' + ac.mac, ac);
             });
         });
 

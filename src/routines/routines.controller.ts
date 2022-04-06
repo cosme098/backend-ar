@@ -9,25 +9,25 @@ export class RoutinesController {
     constructor(private routine: RoutinesService) { }
 
     @UseGuards(JwtAuthGuard)
-    @Get('routinesAll')
+    @Get('api/routinesAll')
     findAll() {
         return this.routine.getRoutines();
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('routines/new')
+    @Post('api/routines/new')
     create(@Body() routineNew: any) {
         return this.routine.createRoutine(routineNew)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('routines/update')
+    @Put('api/routines/update')
     update(@Body() routineUpdate: any) {
         return this.routine.updateRoutine(routineUpdate);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete('routines/delete/:id/:name')
+    @Delete('api/routines/delete/:id/:name')
     remove(@Param() params: any) {
         return this.routine.deleteRoutine(params.id, params.name);
     }

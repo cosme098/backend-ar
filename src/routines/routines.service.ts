@@ -31,18 +31,26 @@ export class RoutinesService {
             this.lastRoutine.create({ name: idRoutine._id.toString() })
         });
         const newSchedule = scheduleJob(data.name, { hour: data.timer[0].hour, minute: data.timer[0].minute, dayOfWeek: data.days }, (timeSchedule) => {
-            if (timeSchedule.getTime() < date.getTime() || (timeSchedule.getTime() == date.getTime() && timeSchedule.getMinutes() < date.getMinutes())) {
-                data.ars.forEach((element: any) => {
-                    currentArs = arsAll.find(x => x._id.toString() == element.toString())
-                    ars.push(currentArs);
-                    currentArs.degress = data.action;
-                    currentArs.power = data.state;
-                    console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
-                    this.Ac.update(currentArs._id, currentArs);
-                    this.mqtt.publishInTopic("mqtt/brisanet/" + currentArs.mac, data).then(() => {
-                    });
-                })
-            }
+            data.ars.forEach(async (element: any) => {
+                currentArs = arsAll.find(x => x._id.toString() == element.toString())
+                currentArs.degress = data.action;
+                currentArs.power = data.state;
+                console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
+                await this.Ac.update(currentArs._id, currentArs);
+            })
+            scheduleJob('30 * * * *', (values) => {
+                if (timeSchedule.getTime() > data.timer[0].hour && timeSchedule.getTime() < 23) {
+                    data.ars.forEach(async (element: any) => {
+                        currentArs = arsAll.find(x => x._id.toString() == element.toString())
+                        if (currentArs.state == true) {
+                            currentArs.degress = data.action;
+                            currentArs.power = false;
+                            console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
+                            await this.Ac.update(currentArs._id, currentArs);
+                        }
+                    })
+                }
+            });
         })
         return idRoutine;
     }
@@ -57,25 +65,31 @@ export class RoutinesService {
         const arsAll: Array<any> = await this.Ac.findAll();
         const ars: Array<any> = [];
         let routineUpdated = routines.find(x => x._id.toString() == routine._id.toString());
-
         cancelJob(routineUpdated.name);
         routineUpdated = null;
-
         const updateSchedule = scheduleJob(routine.name, { hour: routine.timer[0].hour, minute: routine.timer[0].minute, dayOfWeek: routine.days }, (timeSchedule) => {
-            if (timeSchedule.getTime() < date.getTime() || (timeSchedule.getTime() == date.getTime() && timeSchedule.getMinutes() < date.getMinutes())) {
-                routine.ars.forEach((element: any) => {
-                    ars.push(arsAll.find(x => x._id.toString() == element.toString()));
-                })
-                ars.forEach(ac => {
-                    ac.degress = routine.action;
-                    ac.power = routine.state;
-                    console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
-                    this.mqtt.publishInTopic("mqtt/brisanet/" + ac.mac, ac).then(() => {
-                    });
-                })
-            }
+            routine.ars.forEach((element: any) => {
+                ars.push(arsAll.find(x => x._id.toString() == element.toString()));
+            })
+            ars.forEach(ac => {
+                ac.degress = routine.action;
+                ac.power = routine.state;
+                console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
+                this.Ac.update(ac._id, ac);
+            })
+            scheduleJob('30 * * * *', (values) => {
+                if (timeSchedule.getTime() > routine.timer[0].hour && timeSchedule.getTime() < 23) {
+                    ars.forEach(ac => {
+                        if (ac.state == true) {
+                            ac.degress = routine.action;
+                            ac.power = false;
+                            console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
+                            this.Ac.update(ac._id, ac);
+                        }
+                    })
+                }
+            });
         });
-
         return await this.routineData.findByIdAndUpdate(routine._id, routine);
     }
 

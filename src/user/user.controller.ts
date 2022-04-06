@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -13,7 +13,7 @@ export class UserController {
   //   return this.service.findByEmail(params.email);
   // }
 
-  @Post('login')
+  @Post('api/login')
   login(@Body() user: User) {
     return this.service.login(user);
   }

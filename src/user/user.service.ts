@@ -33,6 +33,8 @@ export class UserService {
   }
 
   async login(user: any): Promise<any> {
+    console.log(user);
+
     const validUser = await this.validateUser(user).then(validuser => {
       const payload = { username: validuser.username, sub: validuser.id };
       return this.jwtService.sign(payload);

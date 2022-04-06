@@ -47,12 +47,12 @@ export class AcService {
     this.StructureAc.power = Ac.power;
     this.StructureAc.degress = Ac.degress;
     const result = await new this.AcModel(this.StructureAc).save();
-
     this.mqtt.publishInTopic('mqtt/brisanet/' + this.StructureAc.mac, this.StructureAc);
     return result.id;
   }
 
   async update(id: any, Ac: Ac) {
+    console.log(Ac);
     this.StructureAc.name = Ac.name;
     this.StructureAc.mac = Ac.mac;
     this.StructureAc.localization = Ac.localization;

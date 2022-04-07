@@ -26,8 +26,8 @@ export class RoutinesService {
         const newRoutine = new this.routineData(data);
         const idRoutine = await newRoutine.save();
         let currentArs: any
-        this.lastRoutine.findByIdAndUpdate(data._id, { idRoutine: idRoutine._id.toString(), }, { upsert: true }).then((data) => {
-        }, (err: any) => {
+        this.lastRoutine.findByIdAndUpdate(data._id, { idRoutine: idRoutine._id.toString(), }, { upsert: true }).then((_data) => {
+        }, (_err: any) => {
             this.lastRoutine.create({ name: idRoutine._id.toString() })
         });
         const newSchedule = scheduleJob(data.name, { hour: data.timer[0].hour, minute: data.timer[0].minute, dayOfWeek: data.days }, (timeSchedule) => {
@@ -38,19 +38,6 @@ export class RoutinesService {
                 console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
                 await this.Ac.update(currentArs._id, currentArs);
             })
-            scheduleJob('30 * * * *', (values) => {
-                if (timeSchedule.getTime() > data.timer[0].hour && timeSchedule.getTime() < 23) {
-                    data.ars.forEach(async (element: any) => {
-                        currentArs = arsAll.find(x => x._id.toString() == element.toString())
-                        if (currentArs.state == true) {
-                            currentArs.degress = data.action;
-                            currentArs.power = false;
-                            console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
-                            await this.Ac.update(currentArs._id, currentArs);
-                        }
-                    })
-                }
-            });
         })
         return idRoutine;
     }
@@ -60,36 +47,37 @@ export class RoutinesService {
     }
 
     async updateRoutine(routine: routines): Promise<routines> {
-        const date = new Date(routine.timeTurnOff);
         const routines: Array<any> = await this.getRoutines();
         const arsAll: Array<any> = await this.Ac.findAll();
         const ars: Array<any> = [];
         let routineUpdated = routines.find(x => x._id.toString() == routine._id.toString());
         cancelJob(routineUpdated.name);
         routineUpdated = null;
-        const updateSchedule = scheduleJob(routine.name, { hour: routine.timer[0].hour, minute: routine.timer[0].minute, dayOfWeek: routine.days }, (timeSchedule) => {
+        const updateSchedule = scheduleJob(routine.name, { hour: routine.timer[0].hour, minute: routine.timer[0].minute, dayOfWeek: routine.days }, (_timeSchedule) => {
             routine.ars.forEach((element: any) => {
                 ars.push(arsAll.find(x => x._id.toString() == element.toString()));
             })
-            ars.forEach(ac => {
+            ars.forEach(async ac => {
                 ac.degress = routine.action;
                 ac.power = routine.state;
                 console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
-                this.Ac.update(ac._id, ac);
+                await this.Ac.update(ac._id, ac);
             })
-            scheduleJob('30 * * * *', (values) => {
-                if (timeSchedule.getTime() > routine.timer[0].hour && timeSchedule.getTime() < 23) {
-                    ars.forEach(ac => {
-                        if (ac.state == true) {
-                            ac.degress = routine.action;
-                            ac.power = false;
-                            console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
-                            this.Ac.update(ac._id, ac);
-                        }
-                    })
-                }
-            });
         });
+
+        // scheduleJob('*/1 * * * *', (values) => {
+        //     console.log("hora da rotina", routine.timer[0].hour);
+        //     if (routine.timer[0].hour > routine.timer[0].hour && routine.timer[0].hour < 23) {
+        //         ars.forEach(async ac => {
+        //             if (ac.state == true) {
+        //                 ac.degress = routine.action;
+        //                 ac.power = false;
+        //                 await this.Ac.update(ac._id, ac);
+        //             }
+        //         })
+        //     }
+        // });
+
         return await this.routineData.findByIdAndUpdate(routine._id, routine);
     }
 

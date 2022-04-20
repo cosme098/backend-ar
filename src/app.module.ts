@@ -5,10 +5,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AcModule } from './ac/ac.module';
 import { connect } from 'mqtt';
-import { MqttModule } from 'nest-mqtt';
 import { AppService } from './app.service';
 import { RoutinesService } from './routines/routines.service';
 import { AcService } from './ac/ac.service';
+import { MqttModule } from 'nest-mqtt';
 @Module({
   imports: [
     MqttModule.forRootAsync({
@@ -28,7 +28,7 @@ import { AcService } from './ac/ac.service';
   controllers: [],
   providers: [
     MqttServices,
-    AppService
+    AppService,
   ],
 })
 export class AppModule { }

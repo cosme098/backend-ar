@@ -5,6 +5,7 @@ export class AcModel { }
 export const AcSchema = new mongoose.Schema({
   name: { type: String, required: true },
   mac: { type: String, required: true },
+  status: { type: Boolean, required: true },
   localization: { type: String, required: true },
   protocol: { type: String, required: true },
   model: { type: String, required: true },
@@ -22,11 +23,13 @@ export const AcSchema = new mongoose.Schema({
   filter: { type: Number, required: true },
   clean: { type: Number, required: true },
   sleep: { type: Number, required: true },
+  updateAt: { type: Date, required: true },
 });
 
 export interface Ac {
   name: String
   mac: String
+  status: Boolean
   localization: String
   protocol: String
   model: String
@@ -44,4 +47,5 @@ export interface Ac {
   filter: Number
   clean: Number
   sleep: Number
+  updateAt: Date
 }

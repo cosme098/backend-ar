@@ -2,26 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { lastRoutines, routines } from './routines.model';
 import { Model } from 'mongoose';
-import { scheduleJob, cancelJob, rescheduleJob } from 'node-schedule';
+import { scheduleJob, cancelJob, rescheduleJob, Job } from 'node-schedule';
 import { AcService } from 'src/ac/ac.service';
-import { MqttServices } from '../mqtt/mqtt.service';
+
+
 @Injectable()
 export class RoutinesService {
     constructor(@InjectModel("Routines") private readonly routineData: Model<routines>,
         @InjectModel("lastRoutines") private readonly lastRoutine: Model<lastRoutines>,
-        private readonly Ac: AcService,
-        private readonly mqtt: MqttServices) { }
+        private readonly Ac: AcService) { }
 
     async getRoutines(): Promise<routines[]> {
         return await this.routineData.find().exec();
     }
-    async findRoutine(id): Promise<routines> {
+    async findRoutine(id: any): Promise<routines> {
         return await this.routineData.findById(id);
     }
 
     async createRoutine(data: routines): Promise<routines> {
-        const date = new Date(data.timeTurnOff);
-        const ars: Array<any> = [];
         const arsAll: Array<any> = await this.Ac.findAll();
         const newRoutine = new this.routineData(data);
         const idRoutine = await newRoutine.save();
@@ -35,6 +33,7 @@ export class RoutinesService {
                 currentArs = arsAll.find(x => x._id.toString() == element.toString())
                 currentArs.degress = data.action;
                 currentArs.power = data.state;
+                currentArs.updateAt = new Date();
                 console.log("rotina correndo normal", "mqtt/brisanet/" + currentArs.mac);
                 await this.Ac.update(currentArs._id, currentArs);
             })
@@ -60,28 +59,16 @@ export class RoutinesService {
             ars.forEach(async ac => {
                 ac.degress = routine.action;
                 ac.power = routine.state;
+                ac.updateAt = new Date();
                 console.log("rotina correndo", "mqtt/brisanet/" + ac.mac);
                 await this.Ac.update(ac._id, ac);
             })
         });
 
-        // scheduleJob('*/1 * * * *', (values) => {
-        //     console.log("hora da rotina", routine.timer[0].hour);
-        //     if (routine.timer[0].hour > routine.timer[0].hour && routine.timer[0].hour < 23) {
-        //         ars.forEach(async ac => {
-        //             if (ac.state == true) {
-        //                 ac.degress = routine.action;
-        //                 ac.power = false;
-        //                 await this.Ac.update(ac._id, ac);
-        //             }
-        //         })
-        //     }
-        // });
-
         return await this.routineData.findByIdAndUpdate(routine._id, routine);
     }
 
-    async deleteRoutine(id, name): Promise<void> {
+    async deleteRoutine(id: any, name: string | Job): Promise<void> {
         const removeSchedule = cancelJob(name);
         return await this.routineData.findByIdAndRemove(id);
     }

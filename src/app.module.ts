@@ -23,7 +23,7 @@ import { MqttModule } from 'nest-mqtt';
     RoutinesModule,
     UserModule,
     AcModule,
-    MongooseModule.forRoot('mongodb+srv://cosme:xaruto123456@cluster0.n66yy.mongodb.net/ARCONDICIONADO'),
+    MongooseModule.forRoot(''),
   ],
   controllers: [],
   providers: [
